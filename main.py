@@ -4,7 +4,6 @@ from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 import extract_features
 import nn
-import svm
 import sys
 import glob
 
@@ -62,39 +61,11 @@ if __name__ == "__main__":
 
         allpaths = glob.glob('/home/sam/Music/cough/asr/test/no/*.wav')
         nn.predict(allpaths,le,"trained_cnn.h5", 'no')
-
-    elif sys.argv[1] == "mlp":
-
-        #convert into numpy array
-        X, y, le = get_numpy_array(features_df)
-
-        # split into training and testing data
-        X_train, X_test, y_train, y_test = get_train_test(X,y)
-        num_labels = y.shape[1]
-
-        # create model architecture
-        model = nn.create_mlp(num_labels)
-
-        # train model
-        print("Training..")
-        nn.train(model,X_train, X_test, y_train, y_test,"trained_mlp.h5")
-
-        # compute test loss and accuracy
-        test_loss, test_accuracy = nn.compute(X_test,y_test,"trained_mlp.h5")
-        print("Test loss",test_loss)
-        print("Test accuracy",test_accuracy)
-
-        # predicting using trained model with any test file in dataset
-        nn.predict("dataset/001 - Dog bark/1-30226-A.ogg",le,"trained_mlp.h5")
-
-
-    elif sys.argv[1] == "svm":
-        svm.svm(features_df)
     elif sys.argv[1] == "predict":
         X, y, le = get_numpy_array(features_df)
 
-        allpaths = glob.glob('/home/sam/Music/cough/asr/test/yes/*filter_*.wav')
-        nn.predict(allpaths,le,"trained_cnn.h5",'yes')
+        #allpaths = glob.glob('/home/sam/Music/cough/asr/test/yes/*filter_*.wav')
+        #nn.predict(allpaths,le,"trained_cnn.h5",'yes')
 
         #allpaths = glob.glob('/home/sam/Music/cough/asr/test/no/*.wav')
         #nn.predict(allpaths,le,"trained_cnn.h5", 'no')
