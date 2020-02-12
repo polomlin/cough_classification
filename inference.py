@@ -38,21 +38,26 @@ def is_allowed_file(file):
 
 @app.route('/cough/inference', methods=['POST'])
 def inference():
+    response = ''
     try:
         f = request.files['file']
-        f.save(os.path.join('/tmp/ramdisk', f.filename))
+        f.save(os.path.join('/tmp', f.filename))
         if os.path.exists(os.path.join('/tmp/ramdisk', f.filename)) and os.path.getsize(os.path.join('/tmp/ramdisk', f.filename)) > 0:
             prediction_feature = extract_features.get_features(os.path.join('/tmp/ramdisk', f.filename))
             prediction_feature = np.expand_dims(np.array([prediction_feature]),axis=2)
             predicted_vector = model.predict_classes(prediction_feature)
             if list(predicted_vector)[0] == 1:
-                return '{"response":{"cough": True}}'
+                response = '{"response":{"cough": True}}'
             else:
-                return '{"response":{"cough": False}}'
+                response = '{"response":{"cough": False}}'
         else:
-            return '{"response":{"cough": False}}'
+            response = '{"response":{"cough": False}}'
     except Exception as e:
         print('Error: ', e)
-
+        response = '{"response":{"cough": False}}'
+    finally:
+        if os.path.isfile(os.path.join('/tmp', f.filename)):
+            os.remove(os.path.join('/tmp', f.filename))
+    return response
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=False, threaded = False)         
