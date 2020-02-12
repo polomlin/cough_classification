@@ -8,6 +8,7 @@ import extract_features
 import nn
 import glob
 import numpy as np
+import shutil
 
 
 def create_cnn(num_labels):
@@ -41,14 +42,27 @@ def predict(filenames,le,model_file, kind):
             category = le.inverse_transform(np.array([i]))
             print(category[0], "\t\t : ", format(predicted_proba[i], '.32f') )
 
+def predict_move(filenames, model_file):
+    model = load_model(model_file)
+    for filename in filenames:
+        prediction_feature = extract_features.get_features(filename)
+        prediction_feature = np.expand_dims(np.array([prediction_feature]),axis=2)
+        predicted_vector = model.predict_classes(prediction_feature)
+        if list(predicted_vector)[0] == 1:
+            #base = os.path.basename(filename)
+            shutil.copy2(filename, '/home/sam/Music/cough/asr/waiting_filter/')
 
 if __name__ == "__main__":
     le = LabelEncoder()
     # one hot encoded labels
-    allpaths = glob.glob('/home/sam/Music/cough/asr/test/yes/*.wav')
-    predict(allpaths,le,"trained_cnn.h5",'yes')
+    #allpaths = glob.glob('/home/sam/Music/cough/asr/test/yes/*.wav')
+    #predict(allpaths,le,"trained_cnn.h5",'yes')
 
-    allpaths = glob.glob('/home/sam/Music/cough/asr/test/no/*.wav')
-    predict(allpaths,le,"trained_cnn.h5", 'no')
+    #allpaths = glob.glob('/home/sam/Music/cough/asr/test/no/*.wav')
+    #predict(allpaths,le,"trained_cnn.h5", 'no')
+
+    allpaths = glob.glob('/home/sam/Music/human_sound_effect/wav/*.wav')
+    predict_move(allpaths,"trained_cnn.h5")
+
 
 

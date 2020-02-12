@@ -44,7 +44,7 @@ def train(model,X_train, X_test, y_train, y_test,model_file):
 
     print("training for 100 epochs with batch size 32")
    
-    model.fit(X_train,y_train,batch_size= 1024, epochs = 100, validation_data=(X_test,y_test))
+    model.fit(X_train,y_train,batch_size= 16384, epochs = 150, validation_data=(X_test,y_test))
     
     # save model to disk
     print("Saving model to disk")
@@ -63,7 +63,7 @@ def predict(filenames,le,model_file, kind):
     file_count = float(len(filenames))
     acc = 0.0
     for filename in filenames:
-        print(filename)
+        #print(filename)
         prediction_feature = extract_features.get_features(filename)
         #if model_file == "trained_mlp.h5":
         #    prediction_feature = np.array([prediction_feature])
@@ -71,7 +71,7 @@ def predict(filenames,le,model_file, kind):
         prediction_feature = np.expand_dims(np.array([prediction_feature]),axis=2)
 
         predicted_vector = model.predict_classes(prediction_feature)
-        print(predicted_vector)
+        #print(predicted_vector)
         predicted_class = le.inverse_transform(predicted_vector)
         ##print("Predicted class",predicted_class[0])
         predicted_proba_vector = model.predict_proba([prediction_feature])
@@ -86,8 +86,8 @@ def predict(filenames,le,model_file, kind):
         elif kind == 'yes':
             if predicted_proba[1] > 0.5:
                 acc += 1
-            else:
-                print(filename)
+            #else:
+            #    print(filename)
                 #print(predicted_proba)
         #for i in range(len(predicted_proba)): 
             
